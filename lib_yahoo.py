@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-
 import urllib.request
 from datetime import datetime as dt
 import time
@@ -24,7 +23,8 @@ class yahoo:
         start_time = time.time()
         for i in trange(self.n_ativos):
             ticker = self.tickers[i]
-            url = 'https://query1.finance.yahoo.com/v7/finance/download/{0}?period1=0&period2={1}&interval=1d&events=history'.format(ticker.upper()+'.SA', agora)
+            if ticker=='^BVSP': url = 'https://query1.finance.yahoo.com/v7/finance/download/%5EBVSP?period1=0&period2={0}&interval=1d&events=history'.format(agora)
+            else: url = 'https://query1.finance.yahoo.com/v7/finance/download/{0}?period1=0&period2={1}&interval=1d&events=history'.format(ticker.upper()+'.SA', agora)
             try:
                 urllib.request.urlretrieve(url, self.path + ticker.upper() + '.csv')
                 if self.sp==True: print('Download de {0} concluído'.format(ticker.upper()))
@@ -45,7 +45,7 @@ class yahoo:
         """
         dados_original = self._get_df(self.tickers[0])[column]
         df_consolidado = pd.DataFrame(data=list(dados_original.values),columns={self.tickers[0].upper()}).set_index(dados_original.index)
-        for i in trange(1,self.n_ativos):
+        for i in range(1,self.n_ativos):
             dados_soma = self._get_df(self.tickers[i])[column]
             df_soma = pd.DataFrame(data=list(dados_soma.values),columns={self.tickers[i].upper()}).set_index(dados_soma.index)
             df_consolidado = pd.merge(df_consolidado,df_soma,on='Date')
